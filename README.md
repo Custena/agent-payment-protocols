@@ -2,6 +2,10 @@
 
 _A neutral technical analysis of the protocols, rails, and standards enabling autonomous agent payments - written for developers operating APIs and MCP servers._
 
+## Disclosure
+
+This report is written and maintained by [Genesis Software Group](https://genesissoftware.io) in Copenhagen, the team behind [Custena](https://custena.com), a multi-protocol payment and compliance layer for agent commerce. We are participants in this market, not a neutral third party. The first five sections are written to be useful regardless of which payment infrastructure you choose; Section 6 names Custena once. Every load-bearing factual claim cites a primary source and every cited URL has been resolved. Corrections welcome via PR (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+
 ## TL;DR
 
 - In the six months between October 2025 and April 2026, more than ten payment protocols launched to let AI agents spend money on their own. They were shipped by Coinbase, Stripe, Lightning Labs, Google, Visa, Mastercard, American Express, OpenAI, Skyfire, and Alibaba. None of them interoperate.
@@ -357,6 +361,10 @@ Four properties define the shape:
 - **A unified cross-protocol ledger.** Every transaction in either direction - seller-side payment received, buyer-side payment sent - emits a single ledger entry capturing the agent's identity, the spending mandate, the merchant, the amount, and the policy decisions taken at runtime. Logs are retained per the Article 26(5)-(6) horizon.
 
 Custena is in early access as of publication. We'd love to hear your feedback - whether you operate an API or MCP server, run an enterprise compliance function for spending agents, or simply disagree with parts of this report. Contact details are below.
+
+## Citing this report
+
+Lorenzen, A. (2026). _The State of Agent Payment Protocols (April 2026)._ Genesis Software Group. https://github.com/Custena/agent-payment-protocols
 
 ---
 
