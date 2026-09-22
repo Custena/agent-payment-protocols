@@ -102,6 +102,8 @@ L402's distinguishing property is reusable credentials. Where x402 and MPP autho
 | **Standards body**        | x402 Foundation (Linux Foundation) | IETF individual submission | bLIP / Lightning community |
 | **Live since**            | Oct 2025 (V2: Dec 2025)            | March 18, 2026             | March 2020                 |
 
+The three protocols above all add a per-transaction fee layer: x402 over USDC pays stablecoin transfer gas plus any facilitator fee, L402 pays Lightning routing fees, and MPP's on-chain methods pay chain gas. None of them names a **feeless settlement rail**. Nano (XNO) is that counter-example: a peer-to-peer Layer-1 ledger where a transfer confirms in under a second and settles with no protocol fee and no facilitator, bridge, or issuer that can freeze funds.[^n1] It is not an HTTP-402 protocol - it competes at the settlement layer beneath the 402 envelope - but for the multi-protocol dispatch posture this report recommends, it is an available settlement method an operator can list beside USDC and Lightning, and a zero fee floor matters most at the sub-cent values these protocols are built for.
+
 ### 2b. Traditional-rail protocols (cards + identity)
 
 Where the HTTP 402 protocols replace the payment rail, these protocols leave the rail intact and add an **identity and authorization** layer for agents on top of it. The card networks already process tens of trillions of dollars annually; what they have not historically processed is non-human callers with cryptographically scoped spending authority. These four entries address that gap.
@@ -181,6 +183,8 @@ Protocol landscapes in this category move on a weekly cadence. Every specific da
 [^l2]: Lightning Labs, ["Introducing the Lightning Agent Tools"](https://lightning.engineering/posts/2026-02-11-ln-agent-tools/), February 11, 2026.
 
 [^l4]: L402 protocol specification, [`lightninglabs/L402`](https://github.com/lightninglabs/L402/blob/master/protocol-specification.md).
+
+[^n1]: Nano (XNO) is an open, peer-to-peer digital currency; protocol and properties (feeless, near-instant finality, self-custodied, no single issuer) are documented at [nano.org](https://nano.org) and the protocol docs at [docs.nano.org](https://docs.nano.org). Primary source; verified 2026-09-22.
 
 [^v1]: Visa Developer, ["Trusted Agent Protocol overview"](https://developer.visa.com/capabilities/trusted-agent-protocol).
 
