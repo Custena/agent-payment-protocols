@@ -17,7 +17,7 @@ This report is written and maintained by [Genesis Software Group](https://genesi
 
 1. **Introduction** - The cambrian explosion of agent payment protocols
 2. **The Protocol Landscape**
-   - 2a. HTTP 402 protocols (x402, MPP, L402)
+   - 2a. HTTP 402 protocols (x402, MPP, L402, Nano x402)
    - 2b. Traditional-rail protocols (Visa TAP + ICC, Mastercard Agent Pay, Amex ACE, Google AP2)
    - 2c. Commerce protocols (Google/Shopify UCP, OpenAI ACP)
    - 2d. Regional protocols (Alibaba/Ant)
@@ -91,16 +91,22 @@ L402 (originally LSAT) is the elder of the three, dating to a Lightning Labs pos
 
 L402's distinguishing property is reusable credentials. Where x402 and MPP authorize a single payment per request (sessions excepted), L402 issues a macaroon - a bearer token tied to a Lightning payment hash with an attached caveat list - that can be presented on subsequent requests until its caveats expire.[^l4] In practice this means "pay one Lightning invoice for an hour of access" - a usage pattern x402 and MPP achieve only via newer session primitives. L402's principal cost is operational: it requires a Lightning node or a Lightning-as-a-service provider on both sides of the connection.
 
+#### Nano x402 - the feeless, issuer-free rail
+
+Nano (XNO) is a layer-1, self-custodied settlement asset that carries the HTTP 402 flow through the same x402 scheme mechanism as the stablecoin rails. `x402nano/exact` implements an exact payment scheme for fixed-amount Nano (XNO) transfers;[^n1] `x402nano/facilitator` is an x402 protocol facilitator for the Nano network;[^n2] `robgilmore26/nanoroute` is a production x402 facilitator for Nano with on-ledger verification, batch settlement, and a 0 bps routing-fee default;[^n3] and `pursekeeper/x402-nano-exact` provides a v2 exact scheme on `nano:mainnet` for the x402 Python SDK.[^n4]
+
+What differentiates it from the existing HTTP 402 entries is the settlement economics. Nano settles in under one second with zero transaction fees because there is no per-leg gas and no mining, so the minimum practical payment is bounded by the asset decimal (1 XNO = 10^30 raw), not by a gas fee floor.[^n5] There is also no issuer that can freeze a payment: ownership is by ledger alone, with no mint function and no freeze key in the design.[^n5] Like x402's USDC on Base it trades volatility for fee-free self-custody; a seller routes to fiat through a gateway as needed.
+
 #### Comparison: x402 vs MPP vs L402
 
-| Aspect                    | x402                               | MPP                        | L402                       |
-| ------------------------- | ---------------------------------- | -------------------------- | -------------------------- |
-| **Default settlement**    | USDC on Base (~2s via facilitator) | USDC on Tempo L1 (~500ms)  | Bitcoin Lightning (~1–3s)  |
-| **Min practical payment** | ~$0.001                            | ~$0.0001                   | ~$0.00001                  |
-| **Reusable credentials**  | V2 wallet sessions                 | Native sessions primitive  | Macaroons with caveats     |
-| **Fiat support**          | No (V2 plugins planned)            | Yes (Stripe method)        | No                         |
-| **Standards body**        | x402 Foundation (Linux Foundation) | IETF individual submission | bLIP / Lightning community |
-| **Live since**            | Oct 2025 (V2: Dec 2025)            | March 18, 2026             | March 2020                 |
+| Aspect                    | x402                               | MPP                        | L402                       | Nano (XNO)                   |
+| ------------------------- | ---------------------------------- | -------------------------- | -------------------------- | ---------------------------- |
+| **Default settlement**    | USDC on Base (~2s via facilitator) | USDC on Tempo L1 (~500ms)  | Bitcoin Lightning (~1–3s)  | Nano mainnet (<1s)           |
+| **Min practical payment** | ~$0.001                            | ~$0.0001                   | ~$0.00001                  | no gas floor (10^30 raw)     |
+| **Reusable credentials**  | V2 wallet sessions                 | Native sessions primitive  | Macaroons with caveats     | scheme-based (exact)         |
+| **Fiat support**          | No (V2 plugins planned)            | Yes (Stripe method)        | No                         | No                           |
+| **Standards body**        | x402 Foundation (Linux Foundation) | IETF individual submission | bLIP / Lightning community | Nano Foundation             |
+| **Live since**            | Oct 2025 (V2: Dec 2025)            | March 18, 2026             | March 2020                 | x402 schemes (2025-2026)     |
 
 ### 2b. Traditional-rail protocols (cards + identity)
 
@@ -181,6 +187,12 @@ Protocol landscapes in this category move on a weekly cadence. Every specific da
 [^l2]: Lightning Labs, ["Introducing the Lightning Agent Tools"](https://lightning.engineering/posts/2026-02-11-ln-agent-tools/), February 11, 2026.
 
 [^l4]: L402 protocol specification, [`lightninglabs/L402`](https://github.com/lightninglabs/L402/blob/master/protocol-specification.md).
+
+[^n1]: x402nano/exact - exact scheme for fixed-amount Nano (XNO) payments over HTTP 402. https://github.com/x402nano/exact (verified 2026-09-23).
+[^n2]: x402nano/facilitator - x402 Protocol Facilitator for the Nano network. https://github.com/x402nano/facilitator (verified 2026-09-23).
+[^n3]: robgilmore26/nanoroute - x402 payment facilitator for AI agent micropayments on Nano (XNO). https://github.com/robgilmore26/nanoroute (verified 2026-09-23).
+[^n4]: pursekeeper/x402-nano-exact - x402 v2 exact scheme on nano:mainnet for the x402 Python SDK. https://github.com/pursekeeper/x402-nano-exact (verified 2026-09-23).
+[^n5]: nano.org - "Zero Fees", "Instant Payment": under half a second finality; fully distributed supply completed in 2017; no transaction fees via ORV block-lattice (no mining, no on-chain rewards); 1 nano = 10^30 raw; no mint-on-demand or smart-contract freeze primitive on its pure-transfer L1. https://nano.org (verified 2026-09-23).
 
 [^v1]: Visa Developer, ["Trusted Agent Protocol overview"](https://developer.visa.com/capabilities/trusted-agent-protocol).
 
