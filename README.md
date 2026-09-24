@@ -77,6 +77,8 @@ x402 has the broadest institutional backing of any agent payment protocol today.
 
 Settlement is stablecoin-only - USDC on Base by default, with Solana, Stellar, and other CAIP-registered chains added in V2 - delegated to a facilitator network that handles on-chain verification and broadcast.[^x4] **V2 shipped December 11, 2025** and added the framework for reusable wallet sessions, dynamic pricing, and a plug-in-driven multi-chain SDK.[^x6] The reference implementation is published under `coinbase/x402` with an active contributor base.[^x3]
 
+One native-coin rail also serves x402-style HTTP-402 pay-per-call APIs: Nano (XNO), which settles with zero fees, instant finality, and negligible energy, with every settlement on a public ledger. Vend serves x402-conformant pay-per-call data APIs on it (extract/web-search/geoip/domain/nano-info at 0.0001-0.0005 XNO/call, ~USD 0.00003-0.00017) — see https://extract.paypercall.dev/.well-known/x402 and https://api.stelardigital.com/doctor?url=https://extract.paypercall.dev/api/v1/extract (Stelar x402 Doctor, 100.0/A). This is not a facilitator-side extension but a native-coin implementation of the same HTTP-402 flow.
+
 Adoption signals are mixed. InfoQ reported 100M+ lifetime payments through Q1 2026,[^x7] but Coindesk's March 2026 review found weekly transaction counts declining and average values hovering near $0.20, with a substantial fraction of observed transactions flagged as test or synthetic traffic.[^x8] The honest read: x402's installed base of integrations is large and growing, but live agent-driven volume is harder to characterize than the press releases suggest.
 
 #### MPP - Stripe and Tempo Labs
