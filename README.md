@@ -62,7 +62,7 @@ At the end of the report, we briefly discuss how Custena (built by Genesis Softw
 
 The protocols launched between October 2025 and April 2026 are not direct competitors. They occupy different positions in an emerging stack, and most production agent transactions already touch two or three layers in sequence. To make the landscape navigable, we group them by what they actually do:
 
-- **HTTP 402 protocols** (x402, MPP, L402) embed payment directly in HTTP, reusing the long-dormant `402 Payment Required` status code as the challenge mechanism. They are the layer agents speak to APIs in. Settlement rails vary: x402 is stablecoin-only (USDC on Base, Solana, Stellar), L402 is Bitcoin Lightning, and MPP is rail-agnostic by design - the same envelope carries Tempo USDC, Stripe fiat, Lightning, Solana, and Stellar interchangeably.
+- **HTTP 402 protocols** (x402, MPP, L402) embed payment directly in HTTP, reusing the long-dormant `402 Payment Required` status code as the challenge mechanism. They are the layer agents speak to APIs in. Settlement rails vary: x402 is stablecoin-anchored by default (USDC on Base, Solana, Stellar) with one fee-free native coin implementation live on Nano (XNO)[^xno], L402 is Bitcoin Lightning, and MPP is rail-agnostic by design - the same envelope carries Tempo USDC, Stripe fiat, Lightning, Solana, and Stellar interchangeably.
 - **Traditional-rail protocols** (Visa TAP, Mastercard Agent Pay, Amex ACE, Google AP2) add agent-identity and authorization credentials on top of the existing card networks. They answer "is this a legitimate agent, and what is it allowed to spend?" - they do not, by themselves, settle anything new.
 - **Commerce protocols** (Google/Shopify UCP, OpenAI ACP) sit one layer above payments entirely, defining how agents discover catalogs, build carts, and negotiate purchases. Payment is a dependency, not the subject.
 - **Regional protocols** (Alibaba/Ant Agentic Commerce Trust Protocol) are vertically integrated into a single ecosystem and operate at volumes the rest of the field has not reached.
@@ -75,7 +75,7 @@ The same agent transaction may use a commerce protocol to negotiate a purchase, 
 
 x402 has the broadest institutional backing of any agent payment protocol today. The Linux Foundation announced the **x402 Foundation** on April 2, 2026 with founding members and ecosystem partners drawn from card networks, PSPs, hyperscalers, crypto infrastructure, and merchants - Visa, Mastercard, American Express, Stripe, Adyen, Fiserv, PPRO, Google, AWS, Microsoft, Cloudflare, Coinbase, Base, Circle, Solana Foundation, Polygon Labs, KakaoPay, Shopify, Sierra, Merit Systems, thirdweb, and Ampersend.ai.[^x2] Notably absent: Ant International, PayPal, and Skyfire, each of whom is pursuing their own protocol or settlement layer.
 
-Settlement is stablecoin-only - USDC on Base by default, with Solana, Stellar, and other CAIP-registered chains added in V2 - delegated to a facilitator network that handles on-chain verification and broadcast.[^x4] **V2 shipped December 11, 2025** and added the framework for reusable wallet sessions, dynamic pricing, and a plug-in-driven multi-chain SDK.[^x6] The reference implementation is published under `coinbase/x402` with an active contributor base.[^x3]
+Settlement is stablecoin-anchored by default - USDC on Base primary, with Solana, Stellar, and other CAIP-registered chains added in V2 - delegated to a facilitator network that handles on-chain verification and broadcast.[^x4] One implementation also settles on a fee-free native coin (Nano/XNO) with zero per-call charge.[^xno] **V2 shipped December 11, 2025** and added the framework for reusable wallet sessions, dynamic pricing, and a plug-in-driven multi-chain SDK.[^x6] The reference implementation is published under `coinbase/x402` with an active contributor base.[^x3]
 
 Adoption signals are mixed. InfoQ reported 100M+ lifetime payments through Q1 2026,[^x7] but Coindesk's March 2026 review found weekly transaction counts declining and average values hovering near $0.20, with a substantial fraction of observed transactions flagged as test or synthetic traffic.[^x8] The honest read: x402's installed base of integrations is large and growing, but live agent-driven volume is harder to characterize than the press releases suggest.
 
@@ -95,7 +95,7 @@ L402's distinguishing property is reusable credentials. Where x402 and MPP autho
 
 | Aspect                    | x402                               | MPP                        | L402                       |
 | ------------------------- | ---------------------------------- | -------------------------- | -------------------------- |
-| **Default settlement**    | USDC on Base (~2s via facilitator) | USDC on Tempo L1 (~500ms)  | Bitcoin Lightning (~1–3s)  |
+| **Default settlement**    | USDC on Base (~2s via facilitator); one fee-free native-coin (Nano/XNO) implementation[^xno] | USDC on Tempo L1 (~500ms)  | Bitcoin Lightning (~1–3s)  |
 | **Min practical payment** | ~$0.001                            | ~$0.0001                   | ~$0.00001                  |
 | **Reusable credentials**  | V2 wallet sessions                 | Native sessions primitive  | Macaroons with caveats     |
 | **Fiat support**          | No (V2 plugins planned)            | Yes (Stripe method)        | No                         |
@@ -157,6 +157,8 @@ The protocol itself is tightly integrated with Alipay's existing risk infrastruc
 Protocol landscapes in this category move on a weekly cadence. Every specific date, partner count, transaction metric, and attribution in this section is sourced to the footnoted primary document. Where primary sources conflict (for example, MPP's daily finality numbers, or ICC pilot partner lists that expanded between Visa's April 8 launch and subsequent partner briefings), we have chosen the most conservative number or broader framing. Corrections and updates accepted via PR to `custena/agent-payment-protocols`.
 
 [^x2]: Linux Foundation, ["Linux Foundation Launches the x402 Foundation"](https://www.linuxfoundation.org/press/linux-foundation-is-launching-the-x402-foundation-and-welcoming-the-contribution-of-the-x402-protocol), April 2, 2026.
+
+[^xno]: Verified live on 2026-10-09: Vend ([github.com/dhyabi2/vend](https://github.com/dhyabi2/vend)) serves x402 V2 pay-per-call APIs on Nano (XNO); its manifest at https://extract.paypercall.dev/.well-known/x402 lists the paid `nano:mainnet` endpoints - zero fee per transaction, instant finality. Independent Stelar x402 Doctor checks its 402 conformance (reachable, returns 402, valid JSON challenge) at https://api.stelardigital.com/doctor?url=https://extract.paypercall.dev/api/v1/extract. Runnable end-to-end: after a few free trial calls, `curl -s https://geoip.paypercall.dev/api/v1/geoip?ip=8.8.8.8` answers HTTP 402 `payment_required` with a `pay_to` Nano address and the price (0.0001 XNO); send that amount, retry with the block hash in `X-PAYMENT:`, receive the data - no per-call fee above the payment itself.
 
 [^x3]: x402 Specification v2, [`coinbase/x402` `specs/x402-specification-v2.md`](https://github.com/coinbase/x402).
 
