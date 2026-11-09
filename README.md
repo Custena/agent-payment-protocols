@@ -91,6 +91,12 @@ L402 (originally LSAT) is the elder of the three, dating to a Lightning Labs pos
 
 L402's distinguishing property is reusable credentials. Where x402 and MPP authorize a single payment per request (sessions excepted), L402 issues a macaroon - a bearer token tied to a Lightning payment hash with an attached caveat list - that can be presented on subsequent requests until its caveats expire.[^l4] In practice this means "pay one Lightning invoice for an hour of access" - a usage pattern x402 and MPP achieve only via newer session primitives. L402's principal cost is operational: it requires a Lightning node or a Lightning-as-a-service provider on both sides of the connection.
 
+#### AEP2 - FluxA (Agent Embedded Payment Protocol)
+
+AEP2 is an embedded payment protocol published by FluxA. It does not define its own HTTP challenge; instead it lets an agent attach a one-time signed payment mandate to an x402, A2A or MCP call. The payee verifies the mandate before serving the request, and settlement happens later, within a defined window, by debiting the payer's on-chain account.[^aep1] The specification describes two flows - Order Mode (payee-initiated: the payee returns amount and terms, the payer replies with a signed mandate) and Intent Mode (payer-initiated: the mandate is embedded in the request) - with modular roles for the debit wallet, settlement processor, identity and dispute resolution, plus an optional ZK-SNARK (Groth16/BN254) layer that batch-verifies mandates for multi-payee settlement.[^aep1]
+
+The public reference implementation, `FluxA-Agent-Payment/APE2_MVP` (first published October 2025), contains an `AEP2DebitWallet` smart contract with a delayed-withdrawal model, a Settlement Processor service, and example payee and client code; mandates travel in an `X-Payment-Mandate` request header. Its main branch targets Base Sepolia (testnet), with a separate Solana Devnet branch.[^aep2] As of November 9, 2026, no standards-body submission or independent adoption figures were found; the specification and implementation are maintained by FluxA.
+
 #### Comparison: x402 vs MPP vs L402
 
 | Aspect                    | x402                               | MPP                        | L402                       |
@@ -181,6 +187,10 @@ Protocol landscapes in this category move on a weekly cadence. Every specific da
 [^l2]: Lightning Labs, ["Introducing the Lightning Agent Tools"](https://lightning.engineering/posts/2026-02-11-ln-agent-tools/), February 11, 2026.
 
 [^l4]: L402 protocol specification, [`lightninglabs/L402`](https://github.com/lightninglabs/L402/blob/master/protocol-specification.md).
+
+[^aep1]: FluxA, ["A2A Payment Protocol (AEP2)"](https://fluxapay.xyz/protocol), verified November 9, 2026.
+
+[^aep2]: Reference implementation, [`FluxA-Agent-Payment/APE2_MVP`](https://github.com/FluxA-Agent-Payment/APE2_MVP), verified November 9, 2026.
 
 [^v1]: Visa Developer, ["Trusted Agent Protocol overview"](https://developer.visa.com/capabilities/trusted-agent-protocol).
 
